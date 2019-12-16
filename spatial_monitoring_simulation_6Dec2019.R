@@ -50,6 +50,7 @@ for (i in 1:7){
 	samp.comb[[i]] <- temp.samp #put results in lsit
 }
 new.samp <- do.call("rbind",samp.comb)  #combine list into single spatial data frame
+new.samp@data$siteID <- seq(1,nrow(new.samp@data))
 
 #verify nearest neighbor nest distances
 near.neigh <- as.data.frame(nndist(X=new.samp$x,Y=new.samp$y))
@@ -65,19 +66,9 @@ summary(nests.per)
 hist(nests.per)
 table(nests.per)
 
-#make hexagon grid MUST RUN FUNCTION "make_grid" AT END OF CODE FIRST
-hex.grid2 <- make_grid(state,cell_diameter=25000)
-hex.grid2 <- SpatialPolygonsDataFrame(hex.grid2,data.frame(ID=1:length(hex.grid2)))
-#get average (mode) RSF value in each hex
-###this code takes too long- have to find an alternative
-hex.modes <- zonal.stats(x=hex.grid2,y=hawk.rsf,stat=getmode,plot=F) #function for getmode is at end
-hex.grid2@data$rsfmode <- hex.modes
-
-spplot(hex.grid2,zcol="rsfmode")
-
 #demographic data for simulated nests
 sim.nests <- new.samp@data
-sim.nests$site <- seq(1:nrow(sim.nests))
+#sim.nests$site <- seq(1:nrow(sim.nests))
 sim.nests$X <- new.samp$x
 sim.nests$Y <- new.samp$y
 
@@ -89,12 +80,14 @@ occ.det <- 0.5
 state.det1 <- 0.6 #number of states to be adjusted
 state.det2 <- 0.7
 state.det3 <- 0.8
+n.years <- 10
 
-results <- matrix(nrow=30,ncol=8)
+#results <- matrix(nrow=nrow(sim.nests),ncol=8)
+results <- matrix(nrow=n.years,ncol=8)
 results2 <- NULL
-for (j in 1:10){
+for (j in 1:nrow(sim.nests)){
 	site <- j
-	for (i in 1:30){
+	for (i in 1:n.years){
 		year <- i
 		occ <- rbinom(1,1,occupancy)
 		if (occ==0){
@@ -127,6 +120,18 @@ for (j in 1:10){
 
 colnames(results2) <- c("year","occ","succ","yng","vis1","vis2","vis3","vis4","siteID")
 head(results2)
+
+data.sim <- merge(sim.nests,results2)
+
+#make hexagon grid MUST RUN FUNCTION "make_grid" AT END OF CODE FIRST
+hex.grid2 <- make_grid(state,cell_diameter=25000)
+hex.grid2 <- SpatialPolygonsDataFrame(hex.grid2,data.frame(ID=1:length(hex.grid2)))
+#get average (mode) RSF value in each hex
+###this code takes too long- have to find an alternative
+hex.modes <- zonal.stats(x=hex.grid2,y=hawk.rsf,stat=getmode,plot=F) #function for getmode is at end
+hex.grid2@data$rsfmode <- hex.modes
+
+spplot(hex.grid2,zcol="rsfmode")
 
 
 #check distribution of nest datasets in bins
