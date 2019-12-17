@@ -14,9 +14,6 @@ library(spatialEco)
 #  |__| |__||___|   |_______||_______||_______||___|  |_||_______|  |___|  |___| |__| |__|
 #  
 
-test <- c("T","E","S","T")
-paste0(test, collapse="")
-
 options(scipen=999)
 source('E:/Lucretia/Ferruginous_Hawk_Project/Monitoring/Raptor_Monitoring/mode_func.R')
 source('E:/Lucretia/Ferruginous_Hawk_Project/Monitoring/Raptor_Monitoring/hex_grid_func.R')
