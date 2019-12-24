@@ -243,15 +243,15 @@ demo.dat <- data.frame(do.call(rbind,demo.list))
 hex.hip <- hip.polygon(hex.grid, n.samples/7) #divide n.samples by 7 to match final sample size with 'flower' clusters
 colnames(hex.hip@data)[1] <- "sampleOrder" #rename master sample order column
 hex.samp <- hex.grid[hex.grid@data$ID %in% hex.hip@data$ID,] #subset hex with sample points
-mat <- gIntersects(hex.samp, hex.grid, byid=T)
-pairs <- data.frame(which(mat==TRUE, arr.in=TRUE))
-pairs$sampHex <- rep(colnames(mat),each=7)
-pairs <- pairs[order(pairs$row),]
-hex.clust <- hex.grid[hex.grid@data$ID %in% pairs$row,]
-hex.clust@data$cluster <- pairs$col
-hex.clust$type <- rep("cluster",nrow(hex.clust@data))
-hex.clust$type[hex.clust$ID %in% hex.samp$ID] <- "sample"
-hex.samp <- hex.clust
+mat <- gIntersects(hex.samp, hex.grid, byid=T) #matrix of neighboring hexagons
+pairs <- data.frame(which(mat==TRUE, arr.in=TRUE)) #collapse to table of pairs
+pairs$sampHex <- rep(colnames(mat),each=7) #add hex number to table
+pairs <- pairs[order(pairs$row),] #reorder 
+hex.clust <- hex.grid[hex.grid@data$ID %in% pairs$row,] #select all hexagons in sample
+hex.clust@data$cluster <- pairs$col #add cluster id
+hex.clust$type <- rep("cluster",nrow(hex.clust@data)) #add column indicating if hex is first of second stage cluster sample
+hex.clust$type[hex.clust$ID %in% hex.samp$ID] <- "sample" #indicate first stage sample hexagons
+hex.samp <- hex.clust #assign final sample to same name as unclustered method above
 # plot(hawk.bound, col="grey90")
 # plot(hex.samp, border=hex.samp$cluster, add=T)
 
