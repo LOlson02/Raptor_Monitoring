@@ -327,6 +327,7 @@ results
 # min(nndist(samp.thin$x, samp.thin$y))>min.dist #check min dist
 
 
+
 ## It would be helpful to see these results before we go much further
 #check distribution of nest datasets in bins
 hawk.nests <- readOGR(dsn="E:/Lucretia/Ferruginous_Hawk_Project/RSF/Eagles RSF",layer="active_feha_nests")
@@ -339,6 +340,3 @@ hist.hawks$bin <- extract(hawk.rsf,hist.hawks)
 table(hist.hawks$bin)/nrow(hist.hawks)
 rand.nests$bin <- extract(hawk.rsf,rand.nests)
 table(rand.nests$bin)/nrow(rand.nests)
-
-
-
